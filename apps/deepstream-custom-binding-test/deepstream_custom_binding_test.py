@@ -29,21 +29,21 @@ import pyds
 def bus_call(bus, message, loop):
     t = message.type
     if t == Gst.MessageType.EOS:
-        Gst.info("End-of-stream")
+        print("End-of-stream")
         loop.quit()
     elif t == Gst.MessageType.WARNING:
         err, debug = message.parse_warning()
-        Gst.warning("Warning: %s: %s" % (err, debug))
+        print("Warning: %s: %s" % (err, debug))
     elif t == Gst.MessageType.ERROR:
         err, debug = message.parse_error()
-        Gst.error("Error: %s: %s" % (err, debug))
+        sys.std.err.write("Error: %s: %s" % (err, debug))
         loop.quit()
     return True
 
 def streammux_src_pad_buffer_probe(pad, info, u_data):
     gst_buffer = info.get_buffer()
     if not gst_buffer:
-        Gst.warning("Unable to get GstBuffer ")
+        print("Unable to get GstBuffer ")
         return
 
     batch_meta = pyds.gst_buffer_get_nvds_batch_meta(hash(gst_buffer))
@@ -115,7 +115,7 @@ def fakesink_sink_pad_buffer_probe(pad, info, u_data):
 
             if user_meta.base_meta.meta_type == pyds.NvDsMetaType.NVDS_USER_META:
                 custom_msg_meta = pyds.CustomDataStruct.cast(user_meta.user_meta_data)
-                Gst.info(f'event msg meta, otherAttrs = {pyds.get_string(custom_msg_meta.message)}')
+                print(f'event msg meta, otherAttrs = {pyds.get_string(custom_msg_meta.message)}')
                 print('custom meta structId:: ', custom_msg_meta.structId)
                 print('custom meta msg:: ', pyds.get_string(custom_msg_meta.message))
                 print('custom meta sampleInt:: ', custom_msg_meta.sampleInt)
@@ -143,30 +143,30 @@ def main(args):
 
     pipeline = Gst.Pipeline()
     if not pipeline:
-        Gst.error(" Unable to create Pipeline")
+        sys.stderr.write(" Unable to create Pipeline")
 
     source = Gst.ElementFactory.make("filesrc", "file-source")
     if not source:
-        Gst.error(" Unable to create Source")
+        sys.stderr.write(" Unable to create Source")
 
     h264parser = Gst.ElementFactory.make("h264parse", "h264-parser")
     if not h264parser:
-        Gst.error(" Unable to create h264 parser")
+        sys.stderr.write(" Unable to create h264 parser")
 
     decoder = Gst.ElementFactory.make("nvv4l2decoder", "nvv4l2-decoder")
     if not decoder:
-        Gst.error(" Unable to create Nvv4l2 Decoder")
+        sys.stderr.write(" Unable to create Nvv4l2 Decoder")
 
     streammux = Gst.ElementFactory.make("nvstreammux", "Stream-muxer")
     if not streammux:
-        Gst.error(" Unable to create NvStreamMux")
+        sys.stderr.write(" Unable to create NvStreamMux")
 
     queue = Gst.ElementFactory.make("queue", "queue")
     if not queue:
-        Gst.error(" Unable to create queue")
+        sys.stderr.write(" Unable to create queue")
     queue1 = Gst.ElementFactory.make("queue", "queue1")
     if not queue1:
-        Gst.error(" Unable to create queue")
+        sys.stderr.write(" Unable to create queue")
     sink = Gst.ElementFactory.make("fakesink", "fakesink")
     if not sink:
         sys.stderr.write(" Unable to create fake sink \n")
@@ -178,7 +178,7 @@ def main(args):
     streammux.set_property('height', 720)
     streammux.set_property('batch-size', 1)
 
-    Gst.info("Adding elements to Pipeline")
+    print("Adding elements to Pipeline")
     pipeline.add(source)
     pipeline.add(h264parser)
     pipeline.add(decoder)
@@ -187,17 +187,17 @@ def main(args):
     pipeline.add(queue1)
     pipeline.add(sink)
 
-    Gst.info("Linking elements in the Pipeline")
+    print("Linking elements in the Pipeline")
     source.link(h264parser)
     h264parser.link(decoder)
 
     sinkpad = streammux.request_pad_simple("sink_0")
     if not sinkpad:
-        Gst.error(" Unable to get the sink pad of streammux")
+        sys.stderr.write(" Unable to get the sink pad of streammux")
 
     srcpad = decoder.get_static_pad("src")
     if not srcpad:
-        Gst.error(" Unable to get source pad of decoder(source)")
+        sys.stderr.write(" Unable to get source pad of decoder(source)")
     srcpad.link(sinkpad)
 
     streammux.link(queue)
@@ -211,15 +211,15 @@ def main(args):
 
     streammux_src_pad = streammux.get_static_pad('src')
     if not streammux_src_pad:
-        Gst.error(" Unable to get src pad of streammux")
+        sys.stderr.write(" Unable to get src pad of streammux")
     streammux_src_pad.add_probe(Gst.PadProbeType.BUFFER, streammux_src_pad_buffer_probe, 0)
 
     fakesink_sink_pad = sink.get_static_pad('sink')
     if not fakesink_sink_pad:
-        Gst.error(" Unable to get sink pad of fakesink")
+        sys.stderr.write(" Unable to get sink pad of fakesink")
     fakesink_sink_pad.add_probe(Gst.PadProbeType.BUFFER, fakesink_sink_pad_buffer_probe, 0)
     Gst.debug_bin_to_dot_file(pipeline, Gst.DebugGraphDetails.ALL, 'graph')
-    Gst.info("Starting pipeline")
+    print("Starting pipeline")
 
     pipeline.set_state(Gst.State.PLAYING)
     print("pipeline playing")

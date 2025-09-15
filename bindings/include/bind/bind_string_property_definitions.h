@@ -44,13 +44,15 @@ namespace py = pybind11;
         },                                                         \
         py::return_value_policy::reference
 
-#define STRING_CHAR_ARRAY(TYPE, FIELD)                             \
+#define STRING_CHAR_ARRAY(TYPE, FIELD, FIELD_SIZE)                 \
         [](const TYPE &self)->std::string {                        \
             return std::string(self.FIELD);                        \
         },                                                         \
         [](TYPE &self, std::string str) {                          \
             int strSize = str.size();                              \
-            str.copy(self.FIELD, strSize);                         \
+            memset(self.FIELD, 0, FIELD_SIZE);                     \
+            int len = FIELD_SIZE - 1 > strSize ? strSize : FIELD_SIZE - 1; \
+            str.copy(self.FIELD, len);                             \
         },                                                         \
         py::return_value_policy::reference
 
