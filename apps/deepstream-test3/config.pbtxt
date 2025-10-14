@@ -1,5 +1,5 @@
 ################################################################################
-# SPDX-FileCopyrightText: Copyright (c) 2023 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+# SPDX-FileCopyrightText: Copyright (c) 2023-2025 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 # SPDX-License-Identifier: LicenseRef-NvidiaProprietary
 #
 # NVIDIA CORPORATION, its affiliates and licensors retain all intellectual
@@ -13,7 +13,7 @@
 name: "peoplenet"
 platform: "tensorrt_plan"
 max_batch_size: 2
-default_model_filename: "resnet34_peoplenet_int8.onnx_b2_gpu0_int8.engine"
+default_model_filename: "resnet34_peoplenet_int8.onnx_b2_gpu0_fp16.engine"
 input [
   {
     name: "input_1:0"

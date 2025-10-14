@@ -16,6 +16,8 @@ sudo apt install python3-venv
 
 # Create a venv for pyds
 python3 -m venv pyds
+(for Spark - bug fix)
+python3 -m venv --system-site-packages pyds
 # Activate the environment
 source ./pyds/bin/activate
 ```

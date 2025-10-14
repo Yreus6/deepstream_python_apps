@@ -1,5 +1,5 @@
 ################################################################################
-# SPDX-FileCopyrightText: Copyright (c) 2019-2022 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+# SPDX-FileCopyrightText: Copyright (c) 2019-2025 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -61,9 +61,8 @@ Download Peoplenet model:
 Additionally, for Triton and Triton gRPC
    $ cp config.pbtxt /opt/nvidia/deepstream/deepstream/samples/models/peoplenet
    $ mkdir -p /opt/nvidia/deepstream/deepstream/samples/models/peoplenet/1
-   $ /usr/src/tensorrt/bin/trtexec --onnx=/opt/nvidia/deepstream/deepstream/samples/models/peoplenet/resnet34_peoplenet_int8.onnx --int8 \
-   --calib=/opt/nvidia/deepstream/deepstream/samples/models/peoplenet/resnet34_peoplenet_int8.txt \
-   --saveEngine=/opt/nvidia/deepstream/deepstream/samples/models/peoplenet/1/resnet34_peoplenet_int8.onnx_b2_gpu0_int8.engine \
+   $ /usr/src/tensorrt/bin/trtexec --onnx=/opt/nvidia/deepstream/deepstream/samples/models/peoplenet/resnet34_peoplenet_int8.onnx --fp16 \
+   --saveEngine=/opt/nvidia/deepstream/deepstream/samples/models/peoplenet/1/resnet34_peoplenet_int8.onnx_b2_gpu0_fp16.engine \
    --minShapes="input_1:0":1x3x544x960 \
    --optShapes="input_1:0":2x3x544x960 \
    --maxShapes="input_1:0":2x3x544x960
