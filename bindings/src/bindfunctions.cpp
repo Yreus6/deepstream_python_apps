@@ -650,6 +650,14 @@ namespace pydeepstream {
               py::return_value_policy::reference,
               pydsdoc::methodsDoc::get_ptr);
 
+        m.def("get_native_ptr",
+              [](size_t ptr) {
+                  return (gpointer) ptr;
+              },
+              "ptr"_a,
+              py::return_value_policy::reference,
+              pydsdoc::methodsDoc::get_ptr);
+
         m.def("strdup",
               [](size_t ptr) -> size_t {
                   char *str = (char *) ptr;

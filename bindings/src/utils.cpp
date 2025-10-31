@@ -28,6 +28,7 @@
 #include "nvdsmeta_schema.h"
 #include "utils.hpp"
 #include "nvds_obj_encode.h"
+#include "gst-nvdssr.h"
 #include "bind_string_property_definitions.h"
 #include "../../docstrings/utilsdoc.h"
 
@@ -103,6 +104,48 @@ namespace pydeepstream {
                      },
                      py::return_value_policy::reference,
                      pydsdoc::utilsdoc::NvDsObjEncUsrArgsDoc::cast);
+
+        py::enum_<NvDsSRContainerType>(m, "NvDsSRContainerType")
+                .value("NVDSSR_CONTAINER_MP4", NVDSSR_CONTAINER_MP4)
+                .value("NVDSSR_CONTAINER_MKV", NVDSSR_CONTAINER_MKV)
+                .export_values();
+
+        py::class_<NvDsSRRecordingInfo>(m, "NvDsSRRecordingInfo")
+                .def(py::init<>())
+                .def_property("filename", STRING_FREE_EXISTING(NvDsSRRecordingInfo, filename))
+                .def_property("dirpath", STRING_FREE_EXISTING(NvDsSRRecordingInfo, dirpath))
+                .def_readwrite("duration", &NvDsSRRecordingInfo::duration)
+                .def_readwrite("containerType", &NvDsSRRecordingInfo::containerType)
+                .def_readwrite("width", &NvDsSRRecordingInfo::width)
+                .def_readwrite("height", &NvDsSRRecordingInfo::height)
+                .def_readwrite("containsVideo", &NvDsSRRecordingInfo::containsVideo)
+                .def_readwrite("channels", &NvDsSRRecordingInfo::channels)
+                .def_readwrite("samplingRate", &NvDsSRRecordingInfo::samplingRate)
+                .def_readwrite("containsAudio", &NvDsSRRecordingInfo::containsAudio)
+                .def("cast", [](size_t data) {
+                        return (NvDsSRRecordingInfo *) data;
+                     },
+                     py::return_value_policy::reference)
+                .def("cast", [](void* data) {
+                        return (NvDsSRRecordingInfo *) data;
+                     },
+                     py::return_value_policy::reference);
+        struct SRUserContext {
+            int sessionid;
+            char name[32];
+        };
+        py::class_<SRUserContext>(m, "SRUserContext")
+                .def(py::init<>())
+                .def_readwrite("sessionid", &SRUserContext::sessionid)
+                .def_property("name", STRING_CHAR_ARRAY(SRUserContext, name, 128))
+                .def("cast", [](size_t data) {
+                        return (SRUserContext *) data;
+                     },
+                     py::return_value_policy::reference)
+                .def("cast", [](void* data) {
+                        return (SRUserContext *) data;
+                     },
+                     py::return_value_policy::reference);
     }
 }
 
